@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<project name="CAC Card access library" default="default" basedir=".">
+
+    <!-- ***** paths and patterns  ********************************** -->
+    <property file="version.properties" />
+    <property name="build.versionname" value="${version.major}.${version.minor}" />
+    <property name="build.dir" value="./build" />
+    <property name="src" value="./src" />
+    <property name="dist" value="./dist" />
+    <property name="lib.dir" value="./resources/lib" />
+
+	<path id="project.classpath">
+		<fileset dir="${lib.dir}">
+			<include name="commons-logging-1.1.jar" />
+		</fileset>
+	</path>
+
+    <target name="default" depends="clean, build"></target>
+
+    <target name="clean" description="Clean all built objects">
+        <echo message="cleaning build folders..." />
+        <delete failonerror="false">
+            <fileset dir="${build.dir}/classes">
+                <exclude name="**/.svn"/>
+            </fileset>
+        </delete>
+        <delete failonerror="false">
+            <fileset dir="${dist}">
+                <exclude name="**/.svn"/>
+                <include name="**/*"/>
+            </fileset>
+        </delete>
+    </target>
+
+    <target name="build" depends="compile">
+        <echo message="building cac-access-${build.versionname}.jar..."/>
+        <jar destfile="${dist}/cac-access-${build.versionname}.jar">
+            <fileset dir="${build.dir}/classes" />
+            <fileset file="log4j.xml" />
+            <manifest>
+                <attribute name="TOOL-VERSION" value="${build.versionname}" />
+                <attribute name="BUILD" value="${build.number}" />
+                <attribute name="Main-class" value="org.emerkle.cac.CACAccess"/>
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="compile" depends="prepare">
+        <javac srcdir="${src}" target="1.6" source="1.6" destdir="${build.dir}/classes" debug="true" debuglevel="lines,vars,source" includeantruntime="false">
+            <classpath refid="project.classpath" />
+        </javac>
+        <echo message="copying truststore file"></echo>
+        <copy tofile="${build.dir}/classes/mil/geocent/cac/rulebotTrustStore" file="./resources/rulebotTrustStore" />
+    </target>
+    
+            <!-- prepare for source compilation -->
+    <target name="prepare">
+        <echo message="preparing build folders..." />
+        <mkdir dir="${build.dir}/classes" />
+        <mkdir dir="${dist}" />
+    </target>
+    
+    <target name="test">
+        <echo message="There are no tests yet"/>
+    </target>
+</project>
+
